@@ -32,7 +32,7 @@ from ai_tools import (
 # 配置
 # ========================================
 
-DEEPSEEK_KEY = os.environ.get("DEEPSEEK_KEY") or "sk-a0e722dc84f649d1a7da4a67cd8750a5"
+DEEPSEEK_KEY = os.environ.get("DEEPSEEK_KEY") or ""
 DEEPSEEK_BASE = "https://api.deepseek.com/v1"
 MODEL = "deepseek-chat"
 
@@ -354,8 +354,10 @@ def main():
     print("=" * 55)
 
     # 检查 API Key
-    if not DEEPSEEK_KEY or "sk-你的" in DEEPSEEK_KEY:
-        print("\n❌ 请先设置 DEEPSEEK_KEY 环境变量或修改代码中的 key")
+    if not DEEPSEEK_KEY:
+        print("\n❌ 未设置 DEEPSEEK_KEY 环境变量！")
+        print("   GitHub Actions: Settings → Secrets → Actions → DEEPSEEK_KEY")
+        print("   本地运行: set DEEPSEEK_KEY=sk-xxx && python ai_trader.py --once")
         return
 
     # 初始化客户端

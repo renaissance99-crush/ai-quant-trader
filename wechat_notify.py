@@ -13,7 +13,7 @@ import os
 # 配置 —— 优先从环境变量读取
 # ==========================
 
-SCT_KEY = os.environ.get("SCT_KEY") or "SCT367527Ttl9L5ETcR8gW3sPkA2wqekAw"
+SCT_KEY = os.environ.get("SCT_KEY") or ""
 ENABLE_PUSH = os.environ.get("ENABLE_PUSH", "true").lower() != "false"
 
 
