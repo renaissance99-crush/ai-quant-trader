@@ -283,13 +283,18 @@ def _push_once_summary(decision, now):
     """每次 --once 运行结束时推一条摘要到微信，确保用户知道 AI 跑了"""
     from ai_tools import IS_GITHUB_ACTIONS, get_market_status
 
+    print(f"\n📱 推送诊断: IS_GITHUB_ACTIONS={IS_GITHUB_ACTIONS}")
+
     # 只在 GitHub Actions 或明确要求时推送
     if not IS_GITHUB_ACTIONS:
+        print("📱 跳过推送: 非 GitHub Actions 环境")
         return
 
     try:
-        from wechat_notify import _push as do_push
-    except ImportError:
+        from wechat_notify import _push as do_push, SCT_KEY as _sct
+        print(f"📱 wechat_notify 导入成功, SCT_KEY={'已设置' if _sct and 'SCT' not in _sct else '未设置或默认值'}")
+    except ImportError as e:
+        print(f"📱 wechat_notify 导入失败: {e}")
         return
 
     market = get_market_status()
@@ -325,7 +330,9 @@ def _push_once_summary(decision, now):
 > 🤖 AI 量化 Agent · GitHub Actions 自动运行
 > 下次运行: 下一个交易日"""
 
-    do_push(title, desp, tags="AI量化|每日播报")
+    print(f"📱 准备推送: {title}")
+    result = do_push(title, desp, tags="AI量化|每日播报")
+    print(f"📱 推送结果: {result}")
 
 
 # ========================================
