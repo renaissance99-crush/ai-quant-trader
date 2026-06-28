@@ -1,0 +1,51 @@
+name: 🤖 AI 量化交易 Agent
+
+on:
+  schedule:
+    # 北京时间 9:40（UTC 1:40）— 早盘扫描
+    - cron: '40 1 * * 1-5'
+    # 北京时间 14:00（UTC 6:00）— 午后深度分析（距离15:00截止还有1小时）
+    - cron: '0 6 * * 1-5'
+    # 北京时间 14:30（UTC 6:30）— 收盘前最后决策（距离15:00截止30分钟）
+    - cron: '30 6 * * 1-5'
+
+  # 手动触发（在 GitHub Actions 页面点 "Run workflow"）
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '强制执行（无视交易时段）'
+        type: boolean
+        default: false
+
+jobs:
+  ai-trade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # 单次运行最多10分钟，超时自动终止
+
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v4
+
+      - name: 🐍 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 安装依赖
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🤖 运行 AI 交易 Agent
+        env:
+          DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
+          SCT_KEY: ${{ secrets.SCT_KEY }}
+          ENABLE_PUSH: 'true'
+          TZ: Asia/Shanghai
+        run: |
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            python ai_trader.py --once --force
+          else
+            python ai_trader.py --once
+          fi

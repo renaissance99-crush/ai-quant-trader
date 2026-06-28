@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# 运行时数据（每次AI运行都会变，不提交）
+holdings.json
+pending_trades.json
+daily_limits.json
+decision_log.json
+
+# 确认服务器测试用
+*.pid
+
+# OS
+.DS_Store
+Thumbs.db

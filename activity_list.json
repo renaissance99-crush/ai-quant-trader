@@ -1,0 +1,72 @@
+[
+    {
+        "operator": "中国移动",
+        "name": "咪咕音乐30GB定向流量",
+        "url": "http://h5.nf.migu.cn/app/v4/zt/2021/directed-flow/index.html#/home",
+        "flow": "30GB/月 咪咕音乐定向",
+        "validity": "当月有效，每月可领",
+        "steps": "打开链接登录手机号，点击立即领取",
+        "note": "全国移动用户可用，长期活动至2026年底",
+        "type": "browser"
+    },
+    {
+        "operator": "中国移动",
+        "name": "网龄成长计划H5",
+        "url": "https://dev.coc.10086.cn/coc/web6/ageFeedbackV2/",
+        "flow": "1-10GB通用流量",
+        "validity": "领取后当月有效",
+        "steps": "登录后点击领取，按网龄发放",
+        "note": "部分省份支持，以页面显示为准",
+        "type": "browser"
+    },
+    {
+        "operator": "中国移动",
+        "name": "APP每日签到",
+        "url": "",
+        "flow": "100MB-1GB日包",
+        "validity": "当天有效",
+        "steps": "中国移动APP → 我的 → 签到有礼",
+        "note": "长期活动，每日可签",
+        "type": "app"
+    },
+    {
+        "operator": "中国联通",
+        "name": "流量加油站",
+        "url": "https://m.10010.com/queen/traffic/gasstation.html",
+        "flow": "500MB-2GB",
+        "validity": "7天有效",
+        "steps": "登录后完成简单任务领取",
+        "note": "全国联通用户可用，官方H5活动",
+        "type": "browser"
+    },
+    {
+        "operator": "中国联通",
+        "name": "王卡福利社",
+        "url": "",
+        "flow": "1-5GB专属流量",
+        "validity": "当月有效",
+        "steps": "中国联通APP → 服务 → 特权 → 王卡福利社",
+        "note": "仅限腾讯王卡套餐用户",
+        "type": "app"
+    },
+    {
+        "operator": "中国电信",
+        "name": "每日抽奖领流量",
+        "url": "https://wap.189.cn/activity/turntable/index",
+        "flow": "100MB-3GB随机",
+        "validity": "7天有效",
+        "steps": "登录后每日抽奖1次",
+        "note": "大部分省份电信用户可用",
+        "type": "browser"
+    },
+    {
+        "operator": "中国电信",
+        "name": "星级用户权益",
+        "url": "",
+        "flow": "1-5GB",
+        "validity": "当月有效",
+        "steps": "电信营业厅APP → 我的 → 星级权益",
+        "note": "仅限电信星级用户，每月1次",
+        "type": "app"
+    }
+]
