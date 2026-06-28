@@ -276,6 +276,59 @@ def sleep_until_next(now=None):
 
 
 # ========================================
+# 单次运行摘要推送（GitHub Actions 用）
+# ========================================
+
+def _push_once_summary(decision, now):
+    """每次 --once 运行结束时推一条摘要到微信，确保用户知道 AI 跑了"""
+    from ai_tools import IS_GITHUB_ACTIONS, get_market_status
+
+    # 只在 GitHub Actions 或明确要求时推送
+    if not IS_GITHUB_ACTIONS:
+        return
+
+    try:
+        from wechat_notify import _push as do_push
+    except ImportError:
+        return
+
+    market = get_market_status()
+    time_str = now.strftime("%m/%d %H:%M")
+
+    if decision and decision["type"] == "trade":
+        title = f"🤖 AI交易: {decision['action']} {decision.get('code','')} {decision.get('amount','')}元"
+        desp = f"""## 🤖 AI 交易决策
+
+**时间**: {time_str}
+**操作**: {decision['action']} {decision.get('code','')} {decision.get('amount','')}元
+**理由**: {decision.get('reason','')}
+
+### 市场环境
+- 沪深300: {market.get('index_price','?')} ({market.get('change_today_pct','?')}%)
+- 趋势: {market.get('ma_trend','?')}
+
+---
+> ⚠️ 请在支付宝手动操作，15:00前下单"""
+    else:
+        note = decision.get('note', '无记录') if decision else 'AI 未给出决策'
+        title = f"👀 AI观望 {time_str} | 沪深300 {market.get('change_today_pct','?')}%"
+        desp = f"""## 👀 AI 本轮观望
+
+**时间**: {time_str}
+**市场**: 沪深300 {market.get('index_price','?')} ({market.get('change_today_pct','?')}%)
+**趋势**: {market.get('ma_trend','?')}
+
+### AI 判断
+{note[:300]}
+
+---
+> 🤖 AI 量化 Agent · GitHub Actions 自动运行
+> 下次运行: 下一个交易日"""
+
+    do_push(title, desp, tags="AI量化|每日播报")
+
+
+# ========================================
 # 主循环
 # ========================================
 
@@ -352,6 +405,8 @@ def main():
 
         if once_mode:
             print("\n✅ 单次运行完成")
+            # GitHub Actions 模式：每次都推一条摘要到微信
+            _push_once_summary(decision, now)
             break
 
         # 等待下一轮
