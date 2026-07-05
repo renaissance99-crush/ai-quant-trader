@@ -37,7 +37,7 @@ elif code == 40001:
     print(f"❌ SCT_KEY 无效（40001 错误的Key）！")
     print(f"   当前 key 前6位: {key[:6]}... 末尾: ...{key[-4:]}")
     print(f"   请在 GitHub Settings → Secrets → Actions → SCT_KEY 中更新为正确的 SendKey")
-    print(f"   正确的 key: SCT367527Ttl9L5ETcR8gW3sPkA2wqekAw")
+    print(f"   获取 SendKey: https://sct.ftqq.com/")
     exit(1)
 else:
     print(f"❌ 推送失败 [{code}]: {result.get('message', result)}")
