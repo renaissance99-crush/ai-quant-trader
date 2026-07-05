@@ -292,7 +292,7 @@ def _push_once_summary(decision, now):
 
     try:
         from wechat_notify import _push as do_push, SCT_KEY as _sct
-        print(f"📱 wechat_notify 导入成功, SCT_KEY={'已设置' if _sct and 'SCT' not in _sct else '未设置或默认值'}")
+        print(f"📱 wechat_notify 导入成功, SCT_KEY={'已设置' if _sct else '未设置或默认值'}")
     except ImportError as e:
         print(f"📱 wechat_notify 导入失败: {e}")
         return
