@@ -20,36 +20,38 @@ on:
 jobs:
   ai-trade:
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # 单次运行最多10分钟，超时自动终止
+    timeout-minutes: 10
+
+    # 统一环境变量，所有 step 共享
+    env:
+      TZ: Asia/Shanghai
+      DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
+      SCT_KEY: ${{ secrets.SCT_KEY }}
+      ENABLE_PUSH: 'true'
 
     steps:
       - name: 📥 检出代码
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: 🐍 设置 Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
       - name: 📦 安装依赖
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install --upgrade pip -q
+          pip install -r requirements.txt -q
 
       - name: 🔍 诊断推送
-        env:
-          SCT_KEY: ${{ secrets.SCT_KEY }}
+        continue-on-error: true  # 推送诊断失败不影响主流程
         run: python test_push.py
 
       - name: 🤖 运行 AI 交易 Agent
-        env:
-          DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
-          SCT_KEY: ${{ secrets.SCT_KEY }}
-          ENABLE_PUSH: 'true'
-          TZ: Asia/Shanghai
         run: |
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+          FORCE_FLAG="${{ github.event.inputs.force }}"
+          if [ "$FORCE_FLAG" = "true" ]; then
             python ai_trader.py --once --force
           else
             python ai_trader.py --once
