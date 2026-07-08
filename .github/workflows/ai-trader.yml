@@ -44,10 +44,6 @@ jobs:
           pip install --upgrade pip -q
           pip install -r requirements.txt -q
 
-      - name: 🔍 诊断推送
-        continue-on-error: true  # 推送诊断失败不影响主流程
-        run: python test_push.py
-
       - name: 🤖 运行 AI 交易 Agent
         run: |
           FORCE_FLAG="${{ github.event.inputs.force }}"

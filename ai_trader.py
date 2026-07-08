@@ -280,19 +280,26 @@ def sleep_until_next(now=None):
 # ========================================
 
 def _push_once_summary(decision, now):
-    """每次 --once 运行结束时推一条摘要到微信，确保用户知道 AI 跑了"""
+    """仅在有交易建议时推送微信，观望不推送（省推送配额）"""
     from ai_tools import IS_GITHUB_ACTIONS, get_market_status
 
-    print(f"\n📱 推送诊断: IS_GITHUB_ACTIONS={IS_GITHUB_ACTIONS}")
-
-    # 只在 GitHub Actions 或明确要求时推送
+    # 不在 GitHub Actions 环境，跳过
     if not IS_GITHUB_ACTIONS:
         print("📱 跳过推送: 非 GitHub Actions 环境")
         return
 
+    # 没有决策或只是观望 → 不推送，省配额
+    if not decision or decision.get("type") != "trade":
+        note = decision.get('note', '无记录') if decision else '无决策'
+        print(f"📱 跳过推送: AI 未提议交易（{note[:50]}...），省一次推送配额")
+        return
+
     try:
         from wechat_notify import _push as do_push, SCT_KEY as _sct
-        print(f"📱 wechat_notify 导入成功, SCT_KEY={'已设置' if _sct else '未设置或默认值'}")
+        if not _sct:
+            print("📱 跳过推送: SCT_KEY 未设置")
+            return
+        print(f"📱 wechat_notify 导入成功, SCT_KEY=已设置")
     except ImportError as e:
         print(f"📱 wechat_notify 导入失败: {e}")
         return
@@ -300,9 +307,8 @@ def _push_once_summary(decision, now):
     market = get_market_status()
     time_str = now.strftime("%m/%d %H:%M")
 
-    if decision and decision["type"] == "trade":
-        title = f"🤖 AI交易: {decision['action']} {decision.get('code','')} {decision.get('amount','')}元"
-        desp = f"""## 🤖 AI 交易决策
+    title = f"🤖 AI交易: {decision['action']} {decision.get('code','')} {decision.get('amount','')}元"
+    desp = f"""## 🤖 AI 交易决策
 
 **时间**: {time_str}
 **操作**: {decision['action']} {decision.get('code','')} {decision.get('amount','')}元
@@ -314,21 +320,6 @@ def _push_once_summary(decision, now):
 
 ---
 > ⚠️ 请在支付宝手动操作，15:00前下单"""
-    else:
-        note = decision.get('note', '无记录') if decision else 'AI 未给出决策'
-        title = f"👀 AI观望 {time_str} | 沪深300 {market.get('change_today_pct','?')}%"
-        desp = f"""## 👀 AI 本轮观望
-
-**时间**: {time_str}
-**市场**: 沪深300 {market.get('index_price','?')} ({market.get('change_today_pct','?')}%)
-**趋势**: {market.get('ma_trend','?')}
-
-### AI 判断
-{note[:300]}
-
----
-> 🤖 AI 量化 Agent · GitHub Actions 自动运行
-> 下次运行: 下一个交易日"""
 
     print(f"📱 准备推送: {title}")
     result = do_push(title, desp, tags="AI量化|每日播报")
